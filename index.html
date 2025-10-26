@@ -1,0 +1,157 @@
+<html lang="zh-CN">
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>加载码验证系统</title> 
+  <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 400px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        input {
+            padding: 10px;
+            width: 80%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button.loading {
+            background-color: #cccccc;
+            position: relative;
+        }
+        button.loading::after {
+            content: "正在匹配...";
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background-color: inherit;
+            border-radius: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .error {
+            color: red;
+            margin-top: 15px;
+            display: none;
+        }
+    </style> 
+  <script src="js/jq.js"></script> 
+ </head> 
+ <body id="v1"> 
+  <div id="v2" class="container"> 
+   <h1 id="v3">系统加载验证</h1> 
+   <div id="v4" class="input-group"> 
+    <input type="text" id="accessCode" placeholder="请输入加载码"> 
+   </div> 
+   <button id="verifyBtn">验证并进入</button> 
+   <p id="errorMsg" class="error">加载码无效，请重试</p> 
+  </div> 
+  <script>
+        // 显示加载状态
+        function showLoading() {
+            const btn = document.getElementById('verifyBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+        }
+
+        // 隐藏加载状态
+        function hideLoading() {
+            const btn = document.getElementById('verifyBtn');
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }
+
+        // 从JSON文件加载配置
+        async function loadConfig() {
+            try {
+                const response = await fetch('匹配网页.json');
+                if (!response.ok) {
+                    throw new Error('配置文件加载失败');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('加载配置出错:', error);
+                return null;
+            }
+        }
+
+        async function validateCode() {
+            const inputCode = document.getElementById('accessCode').value.trim();
+            const errorElement = document.getElementById('errorMsg');
+            errorElement.style.display = 'none';
+            
+            showLoading();
+            
+            try {
+                const config = await loadConfig();
+                if (!config) {
+                    throw new Error('无法加载配置');
+                }
+
+                // 立即检查匹配情况
+                const matchedPage = config[inputCode];
+                
+                if (matchedPage) {
+                    // 匹配成功，设置较高延迟（模拟加载过程）
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    window.location.href = matchedPage;
+                } else {
+                    // 匹配失败，设置较低延迟（快速反馈）
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                    errorElement.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('验证过程中出错:', error);
+                errorElement.textContent = '验证时出现错误，请重试';
+                errorElement.style.display = 'block';
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // 添加按钮点击和回车键事件
+        document.getElementById('verifyBtn').addEventListener('click', validateCode);
+        document.getElementById('accessCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                validateCode();
+            }
+        });
+    </script>  
+ </body>
+</html>

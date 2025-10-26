@@ -1,17 +1,17 @@
 [
     {
-        "name": "微信",
-        "description": "一款跨平台的通讯工具，支持语音、视频、图片和文字聊天",
-        "version": "8.0.20",
-        "time": "2023-05-15",
-        "downloadUrl": "https://weixin.qq.com/"
+        "name": "城市我来管",
+        "description": "简约高级的城市demo",
+        "version": "0.2.20",
+        "time": "2025-10-9",
+        "downloadUrl": "https://wwwd.qyshare.com:2999/s/b7node"
     },
     {
-        "name": "支付宝",
-        "description": "移动支付平台，提供转账、缴费、理财等多种金融服务",
-        "version": "10.2.36",
-        "time": "2023-06-02",
-        "downloadUrl": "https://www.alipay.com/"
+        "name": "地铁跑酷",
+        "description": "移动平台随机生成的场景，伊蕾娜赛季",
+        "version": "0.2.36",
+        "time": "2025-10-12",
+        "downloadUrl": "https://wwwd.qyshare.com:2999/s/za0ece"
     },
     {
         "name": "抖音",

@@ -5,138 +5,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>应用列表</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .search-box {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        #searchInput {
-            width: 100%;
-            max-width: 500px;
-            padding: 10px 15px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            outline: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        #searchInput:focus {
-            border-color: #4a90e2;
-            box-shadow: 0 2px 5px rgba(74, 144, 226, 0.3);
-        }
-        
-        .app-list {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        
-        .app-item {
-            padding: 15px 20px;
-            border-bottom: 1px solid #eee;
-            transition: background-color 0.2s;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .app-item:hover {
-            background-color: #f9f9f9;
-        }
-        
-        .app-info {
-            flex: 1;
-        }
-        
-        .app-item h3 {
-            margin: 0 0 5px 0;
-            color: #333;
-        }
-        
-        .app-item .description {
-            margin: 0 0 10px 0;
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .app-item .meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 13px;
-            color: #888;
-        }
-        
-        .get-btn {
-            background-color: #4a90e2;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-left: 15px;
-        }
-        
-        .get-btn:hover {
-            background-color: #3a7bc8;
-        }
-        
-        .no-results {
-            padding: 20px;
-            text-align: center;
-            color: #888;
-        }
-        
-        .loading {
-            padding: 20px;
-            text-align: center;
-            color: #888;
-        }
+        body { font-family: 'Arial', sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f5f5f5; }
+        h1 { color: #333; text-align: center; margin-bottom: 30px; }
+        .search-box { margin-bottom: 20px; text-align: center; }
+        #searchInput { width: 100%; max-width: 500px; padding: 10px 15px; font-size: 16px; border: 1px solid #ddd; border-radius: 25px; outline: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        #searchInput:focus { border-color: #4a90e2; box-shadow: 0 2px 5px rgba(74, 144, 226, 0.3); }
+        .app-list { background-color: white; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; }
+        .app-item { padding: 12px 20px; border-bottom: 1px solid #eee; transition: background-color 0.2s; }
+        .app-item:hover { background-color: #f9f9f9; }
+        .app-item h3 { margin: 0; color: #333; font-size: 18px; }
+        .app-item h3 a { color: inherit; text-decoration: none; }
+        .app-item h3 a:hover { text-decoration: underline; color: #4a90e2; }
+        .no-results, .loading { padding: 20px; text-align: center; color: #888; }
     </style>
 </head>
 <body>
     <h1>应用列表</h1>
-    <!-- 搜索框 -->
+
     <div class="search-box">
         <input type="text" id="searchInput" placeholder="搜索应用..." oninput="searchApps()">
     </div>
-    <!-- 应用列表 -->
+
     <div class="app-list" id="appList">
         <div class="loading">正在加载应用列表...</div>
     </div>
 
     <script>
-        // 全局变量存储应用数据
         let allApps = [];
-        
-        // 页面加载时获取应用数据
+
         document.addEventListener('DOMContentLoaded', function() {
             loadAppData();
         });
-        
-        // 从JSON文件加载数据
+
         function loadAppData() {
             fetch('下载列表.json')
                 .then(response => {
-                    if (!response.ok) {
-                        throw new Error('网络响应不正常');
-                    }
+                    if (!response.ok) throw new Error('网络响应不正常');
                     return response.json();
                 })
                 .then(data => {
@@ -148,51 +52,38 @@
                     document.getElementById('appList').innerHTML = '<div class="no-results">加载应用列表失败</div>';
                 });
         }
-        
-        // 渲染应用列表函数
+
         function renderAppList(apps) {
             const appListElement = document.getElementById('appList');
-            
+
             if (!apps || apps.length === 0) {
                 appListElement.innerHTML = '<div class="no-results">没有找到匹配的应用</div>';
                 return;
             }
-            
+
             let html = '';
             apps.forEach(app => {
+                const url = app.downloadUrl || '#';
+                const name = app.name || '未命名应用';
                 html += `
                     <div class="app-item">
-                        <div class="app-info">
-                            <h3>${app.name || '未命名应用'}</h3>
-                            <p class="description">${app.description || '暂无描述'}</p>
-                            <div class="meta">
-                                <span>版本: ${app.version || '未知'}</span>
-                                <span>更新时间: ${app.time || '未知'}</span>
-                            </div>
-                        </div>
-                        <button class="get-btn" onclick="window.open('${app.downloadUrl || '#'}', '_blank')">获取</button>
+                        <h3><a href="${url}" target="_blank" rel="noopener noreferrer">${name}</a></h3>
                     </div>
                 `;
             });
-            
+
             appListElement.innerHTML = html;
         }
-        
-        // 搜索应用函数
+
         function searchApps() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
             if (!searchTerm) {
                 renderAppList(allApps);
                 return;
             }
-            
             const filteredApps = allApps.filter(app => {
-                const nameMatch = app.name && app.name.toLowerCase().includes(searchTerm);
-                const descMatch = app.description && app.description.toLowerCase().includes(searchTerm);
-                return nameMatch || descMatch;
+                return (app.name && app.name.toLowerCase().includes(searchTerm));
             });
-            
             renderAppList(filteredApps);
         }
     </script>
